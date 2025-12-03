@@ -18,6 +18,9 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
+    public Product() {
+    }
+
     public Product(Long id, String name, BigDecimal price) {
         this.id = id;
         this.name = name;
