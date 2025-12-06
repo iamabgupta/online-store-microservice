@@ -2,6 +2,7 @@ package com.abhishek.catalog.services;
 
 import com.abhishek.catalog.dto.ProductRequest;
 import com.abhishek.catalog.dto.ProductResponse;
+import com.abhishek.catalog.exception.ProductNotFoundException;
 import com.abhishek.catalog.mapper.ProductMapper;
 import com.abhishek.catalog.model.Product;
 import com.abhishek.catalog.repository.ProductRepository;
@@ -33,7 +34,7 @@ public class ProductServiceImpl implements com.abhishek.catalog.service.ProductS
 
     @Override
     public ProductResponse getProductById(Long id) {
-        Product product= productRepository.findById(id).orElseThrow(()-> new RuntimeException("Product not found"));
+        Product product= productRepository.findById(id).orElseThrow(()-> new ProductNotFoundException(id));
         return  ProductMapper.toResponse(product);
     }
 
