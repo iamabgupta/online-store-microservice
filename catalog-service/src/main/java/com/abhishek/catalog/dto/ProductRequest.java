@@ -13,6 +13,14 @@ public class ProductRequest {
     @DecimalMin(value = "1.00", message = "Price must be greater than or equal to 1.00")
     private BigDecimal price;
 
+    public ProductRequest(String name, BigDecimal price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public ProductRequest() {
+    }
+
     // getters and setters
 
     public String getName() {

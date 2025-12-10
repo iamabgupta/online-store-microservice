@@ -10,6 +10,15 @@ public class ProductResponse {
     // getters and setters
 
 
+    public ProductResponse() {
+    }
+
+    public ProductResponse(Long id, String name, BigDecimal price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
+
     public Long getId() {
         return id;
     }
