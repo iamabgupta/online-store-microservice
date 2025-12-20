@@ -1,4 +1,4 @@
-package com.abhishek.catalog.services;
+package com.abhishek.catalog.service;
 
 import com.abhishek.catalog.dto.ProductRequest;
 import com.abhishek.catalog.dto.ProductResponse;
@@ -11,8 +11,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This class contains business logic
+ */
+
+//@Service tells spring this contains business logic
 @Service
-public class ProductServiceImpl implements com.abhishek.catalog.services.ProductService {
+public class ProductServiceImpl implements com.abhishek.catalog.service.ProductService {
 
     private final ProductRepository productRepository;
 

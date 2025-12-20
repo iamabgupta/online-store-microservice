@@ -5,7 +5,6 @@ import com.abhishek.catalog.dto.ProductResponse;
 import com.abhishek.catalog.exception.ProductNotFoundException;
 import com.abhishek.catalog.model.Product;
 import com.abhishek.catalog.repository.ProductRepository;
-import com.abhishek.catalog.services.ProductServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
