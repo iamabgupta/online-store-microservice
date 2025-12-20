@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ProductServiceImpl implements com.abhishek.catalog.service.ProductService {
+public class ProductServiceImpl implements com.abhishek.catalog.services.ProductService {
 
     private final ProductRepository productRepository;
 
