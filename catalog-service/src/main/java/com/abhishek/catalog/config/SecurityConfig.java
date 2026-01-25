@@ -2,7 +2,10 @@ package com.abhishek.catalog.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * SecurityConfig configures Spring Security for this application.
+ *
  *
  * <p>This configuration enables basic security controls for REST APIs and
  * prepares the application for JWT-based authentication.</p>
@@ -61,7 +65,14 @@ public class SecurityConfig {
                         "/health",
                         "/swagger-ui/**",
                         "v3/api-docs/**"
-                ).permitAll().anyRequest().authenticated()
+                ).permitAll().requestMatchers(HttpMethod.GET, "/products/**")
+                        .hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/products/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/products/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/products/**")
+                        .hasRole("ADMIN").anyRequest().authenticated()
         ).httpBasic(Customizer.withDefaults());
 
         return http.build();
@@ -73,5 +84,21 @@ public class SecurityConfig {
         var admin = User.withUsername("admin").password("{noop}admin123").roles("ADMIN").build();
 
         return new InMemoryUserDetailsManager(user, admin);
+    }
+
+
+    /**
+     * Exposes the AuthenticationManager bean used for processing authentication requests.
+     *
+     * <p>The AuthenticationManager delegates authentication to the configured
+     * UserDetailsService and password validation mechanisms.</p>
+     *
+     * <p>This bean is required for programmatic authentication, such as
+     * login endpoints that authenticate credentials manually.</p>
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
     }
 }

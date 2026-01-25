@@ -35,7 +35,7 @@ public class ProductController{
             return ResponseEntity.ok(productService.createProduct(request));
         }
 
-        @GetMapping
+        @GetMapping("/list")
         public ResponseEntity<List<ProductResponse>> getAll() {
             //Springs converts List<ProductResponse> --> JSON response
             return ResponseEntity.ok(productService.getAllProducts());
