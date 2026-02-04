@@ -58,6 +58,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
+    //@Bean Used inside @Configuration class to manually define beans.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.csrf(csrf -> csrf.disable()).authorizeRequests(
@@ -78,6 +79,8 @@ public class SecurityConfig {
         return http.build();
     }
 
+
+    //@Bean Used inside @Configuration class to manually define beans.
     @Bean
     public UserDetailsService userDetailsService(){
         var user = User.withUsername("user").password("{noop}user123").roles("USER").build();
@@ -96,6 +99,8 @@ public class SecurityConfig {
      * <p>This bean is required for programmatic authentication, such as
      * login endpoints that authenticate credentials manually.</p>
      */
+
+    //@Bean Used inside @Configuration class to manually define beans.F
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration) throws Exception {

@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
  */
 
 //@Service tells spring this contains business logic
+//@Service is same as @Component internally, but semantically for business logic layer.
 @Service
 public class ProductServiceImpl implements com.abhishek.catalog.service.ProductService {
 

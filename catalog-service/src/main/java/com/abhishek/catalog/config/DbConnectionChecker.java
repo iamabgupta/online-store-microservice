@@ -23,6 +23,8 @@ import java.sql.DriverManager;
  */
 
 //@Component : Spring automatically detects and create a bean
+//It tells Spring:
+//“Create an object of this class and manage it in the Spring container.”
 @Component
 public class DbConnectionChecker {
 

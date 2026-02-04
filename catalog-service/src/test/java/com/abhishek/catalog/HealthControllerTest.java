@@ -13,7 +13,8 @@ class HealthControllerTest {
  
     @LocalServerPort
     private int port;
- 
+
+   // @Autowired Injects a bean into another class.
     @Autowired
     private TestRestTemplate restTemplate;
  
