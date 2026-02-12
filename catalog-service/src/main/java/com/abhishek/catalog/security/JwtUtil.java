@@ -1,9 +1,12 @@
 package com.abhishek.catalog.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.crypto.SecretKey;
@@ -54,4 +57,50 @@ public class JwtUtil {
                 .signWith(SECRET_KEY)
                 .compact();
     }
+
+    /**
+     * @param token
+     * @return
+     *
+     * Create JWT parser
+     * Set signing key (for validation)
+     * Parse token
+     * Verify signature
+     * Verify expiration
+     * Return payload (Claims)
+     * If token invalid → exception thrown
+     * If valid → claims returned
+     */
+    public static Claims extractClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    /**
+     * Spring Security does not understand JWT directly.
+     * It understands: Authentication object.
+     * So we convert JWT → Authentication.
+     *
+     *
+     * @param token
+     * @return
+     */
+    public static UsernamePasswordAuthenticationToken buildAuthentication(String token) {
+        Claims claims = extractClaims(token);
+
+        String username = claims.getSubject();
+        List<String> roles = claims.get("roles", List.class);
+
+        return new UsernamePasswordAuthenticationToken(
+                username,
+                null,
+                roles.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList())
+        );
+    }
+
 }

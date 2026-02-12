@@ -1,16 +1,18 @@
 package com.abhishek.catalog.config;
 
+import com.abhishek.catalog.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * SecurityConfig configures Spring Security for this application.
@@ -56,10 +58,23 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 
 @Configuration
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+    private final JwtAuthenticationFilter jwtAuthFilter;
+
+    /**
+     * Spring creates JwtAuthFilter
+     * Injects it into SecurityConfig
+     * Security chain gets the filter
+     * @param jwtAuthFilter
+     */
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
+
     //@Bean Used inside @Configuration class to manually define beans.
-    @Bean
+   /** @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.csrf(csrf -> csrf.disable()).authorizeRequests(
                 auth -> auth.requestMatchers(
@@ -77,6 +92,35 @@ public class SecurityConfig {
         ).httpBasic(Customizer.withDefaults());
 
         return http.build();
+    }**/
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http.sessionManagement(
+                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
+
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**",
+                                "/swagger-ui/**",
+                                "v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class
+                )
+               // .httpBasic(Customizer.withDefaults())  //This line make basic authentication able
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .httpBasic(httpBasic -> httpBasic.disable())   //  IMPORTANT Disabling basic authenticiation
+                .formLogin(form -> form.disable());            //  IMPORTANT Disabling form login
+
+        return http.build();
+
+
     }
 
 
@@ -85,8 +129,9 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService(){
         var user = User.withUsername("user").password("{noop}user123").roles("USER").build();
         var admin = User.withUsername("admin").password("{noop}admin123").roles("ADMIN").build();
+        var readOnly = User.withUsername("readOnly").password("{noop}readOnly123").roles("READ_ONLY").build();
 
-        return new InMemoryUserDetailsManager(user, admin);
+        return new InMemoryUserDetailsManager(user, admin, readOnly);
     }
 
 

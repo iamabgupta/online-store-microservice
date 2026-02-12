@@ -4,6 +4,7 @@ import com.abhishek.catalog.dto.ProductRequest;
 import com.abhishek.catalog.dto.ProductResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,23 +30,28 @@ public class ProductController{
             this.productService = productService;
         }
 
+        @PreAuthorize("hasRole('ADMIN')")
         @PostMapping("/create")
         public ResponseEntity<ProductResponse> create(@Valid @RequestBody ProductRequest request) {
             //Spring sends response of creating object in jason format
             return ResponseEntity.ok(productService.createProduct(request));
         }
 
+
+        @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'READ_ONLY')")
         @GetMapping("/list")
         public ResponseEntity<List<ProductResponse>> getAll() {
             //Springs converts List<ProductResponse> --> JSON response
             return ResponseEntity.ok(productService.getAllProducts());
         }
 
+        @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'READ_ONLY')")
         @GetMapping("/{id}")
         public ResponseEntity<ProductResponse> getById(@PathVariable Long id) {
             return ResponseEntity.ok(productService.getProductById(id));
         }
 
+        @PreAuthorize("hasRole('ADMIN')")
         @PutMapping("/{id}")
         public ResponseEntity<ProductResponse> update(
                 @PathVariable Long id,
@@ -54,6 +60,7 @@ public class ProductController{
             return ResponseEntity.ok(productService.updateProduct(id, request));
         }
 
+        @PreAuthorize("hasRole('ADMIN')")
         @DeleteMapping("/{id}")
         public ResponseEntity<Void> delete(@PathVariable Long id) {
             productService.deleteProduct(id);
